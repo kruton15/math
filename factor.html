@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>ถอดรหัสตัวประกอบ</title>
+<link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --success: #10b981;
+  --danger: #ef4444;
+  --bg-grad: linear-gradient(135deg, #dbeafe 0%, #93c5fd 40%, #60a5fa 70%, #3b82f6 100%);
+  --panel: rgba(255, 255, 255, 0.75);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Itim', sans-serif; }
+html, body { height: 100%; width: 100%; overflow: hidden; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+body { min-height: 100vh; display: flex; justify-content: center; align-items: center; background: var(--bg-grad); position: relative; }
+
+.animal-bg { position: absolute; pointer-events: none; z-index: 1; animation: floatAnimal 6s infinite ease-in-out; filter: drop-shadow(0 4px 8px rgba(0,0,0,.15)); }
+@media (max-width: 768px){ .animal-bg { opacity: 0.18 !important; } }
+@keyframes floatAnimal { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(5deg); } }
+
+.container { position: relative; z-index: 10; width: 95%; max-width: 480px; padding: 25px 20px; background: var(--panel); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 30px; border: 2px dashed var(--primary); box-shadow: 0 15px 35px rgba(37, 99, 235, 0.1); }
+.logo { font-size: 65px; margin-bottom: 5px; text-align: center; }
+h1 { text-align: center; color: var(--primary); margin-bottom: 12px; font-size: 2.2rem; }
+h2 { color: var(--primary-dark); font-size: 1.5rem; text-align: center; }
+.subtitle { color: #4b5563; margin-bottom: 25px; font-size: 1.2rem; text-align: center; line-height: 1.6; }
+
+.top { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 1.1rem; margin-bottom: 15px; background: rgba(255,255,255,0.5); padding: 10px 18px; border-radius: 20px; color: #1e3a8a; }
+#hearts { letter-spacing: 2px; font-size: 1.2rem; }
+
+.panel { padding: 15px 10px; border-radius: 20px; margin-bottom: 15px; text-align: center; border: 2px dashed var(--primary); background: rgba(255,255,255,0.4); }
+.panel-label { font-size: 1.1rem; color: #4b5563; }
+.target { font-size: 55px; font-weight: 800; color: var(--primary-dark); line-height: 1; margin: 5px 0; }
+.slots { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 10px; flex-wrap: wrap; min-height: 38px; }
+.slot-num { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; }
+.slot-num.empty { background: #ffffff; border: 2px dashed rgba(37, 99, 235, 0.3); color: rgba(37, 99, 235, 0.3); }
+.slot-num.found { background: var(--success); color: #fff; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.multiply { color: #3b82f6; font-weight: bold; font-size: 1.3rem; }
+
+.grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
+.cell { aspect-ratio: 1; border: none; border-radius: 14px; font-size: clamp(16px, 4.5vw, 22px); font-weight: 700; background: #ffffff; color: #1e3a8a; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; }
+.cell:hover { transform: translateY(-2px); background: #eff6ff; }
+.cell:active { transform: scale(0.95); }
+.cell.hit { background: var(--success) !important; color: #fff; transform: scale(0.9); opacity: 0.3; cursor: default; box-shadow: none; }
+
+.msg { text-align: center; height: 24px; font-size: 1.1rem; font-weight: 600; color: var(--danger); margin-bottom: 10px; }
+.center { text-align: center; }
+.big { font-size: 70px; margin-bottom: 10px; animation: pulse 0.8s infinite alternate; }
+
+button.start, button.back { margin-top: 15px; border: none; border-radius: 50px; padding: 14px 45px; font-size: 22px; cursor: pointer; color: white; transition: all 0.3s ease; }
+button.start { background: linear-gradient(135deg, #3b82f6, var(--primary-dark)); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3); }
+button.back { background: linear-gradient(135deg, #94a3b8, #64748b); box-shadow: 0 8px 20px rgba(100, 116, 139, 0.3); }
+button.start:hover, button.back:hover { transform: scale(1.06); }
+
+@keyframes popIn { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes pulse { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.05); opacity: 1; } }
+.shake { animation: shake 0.4s ease-in-out; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+.footer { margin-top: 20px; color: #6b7280; font-size: 15px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div id="animal-container"></div>
+
+<div class="container" id="gameCard">
+  <!-- หน้าคำอธิบายเริ่มต้นเกม -->
+  <div id="startScreen" class="center">
+    <h1>ถอดรหัสตัวประกอบ</h1>
+    <div class="logo">🧩</div>
+    <p class="subtitle">หาตัวประกอบเฉพาะของเลขเป้าหมายให้ครบ<br>แยกตัวประกอบทั้งหมด 10 ข้อ ⏱️<br>มีหัวใจให้เพียง 3 ดวงเท่านั้น ❤️</p>
+    <button class="start" onclick="startGame()">🎮 เริ่มภารกิจ</button><br>
+    <button class="back" onclick="goToMain()">📌 หน้าภารกิจ</button>
+    <div class="footer">🌈 มาถอดรหัสคณิตศาสตร์แสนสนุกกันเลย 🌈</div>
+  </div>
+
+  <!-- หน้าจอสำหรับเล่นเกม -->
+  <div id="gameScreen" style="display:none;">
+    <div class="top">
+      <div id="hearts">❤️❤️❤️</div>
+      <div id="progress">ข้อ 1/10</div>
+      <div id="score">คะแนน 0</div>
+    </div>
+    
+    <div class="panel" id="mainPanel">
+      <div class="panel-label">🎯 เลขเป้าหมายย่อยตัวประกอบ</div>
+      <div class="target" id="target">0</div>
+      <div class="slots" id="slots"></div>
+    </div>
+    
+    <div class="grid" id="grid"></div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <!-- หน้าจอสรุปผลเกม -->
+  <div id="endScreen" class="center" style="display:none;"></div>
+</div>
+
+<script>
+const GRID = 20, TOTAL = 10;
+const primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97];
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1-M1YBoMw1LeTG_vT32aS8NzVTLMICLb5sMKGtton-tdApCGzG22V52k4c20HWpe4/exec";
+
+const urlParams = new URLSearchParams(window.location.search);
+const studentNo = urlParams.get('studentNo') || '';
+const row = urlParams.get('row') || '';
+const sheetName = urlParams.get('sheet') || '';
+
+let hearts = 3, round = 1, score = 0, used = [], target = 0, need = [], found = [], audioCtx = null;
+
+// สุ่มไอคอนสัตว์ทะเลลอยพื้นหลัง
+(function createRandomAnimals() {
+    const container = document.getElementById('animal-container');
+    const animals = ['🐟','🐠','🐡','🐙','🦀','🫧'].sort(() => Math.random() - 0.5);
+    animals.forEach((animal, i) => {
+        const span = document.createElement('span');
+        span.className = 'animal-bg'; span.innerText = animal;
+        const angle = (i / animals.length) * Math.PI * 2;
+        span.style.left = `${50 + Math.cos(angle) * 38}%`; span.style.top = `${50 + Math.sin(angle) * 38}%`;
+        span.style.fontSize = `${[45, 55, 65, 75, 85][Math.floor(Math.random() * 5)]}px`;
+        span.style.opacity = 0.7; span.style.animationDuration = `${5 + Math.random() * 3}s`;
+        container.appendChild(span);
+    });
+})();
+
+function playSound(type) {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = type === "correct" ? 750 : (type === "wrong" || type === "lose" ? 180 : (type === "win" ? 950 : 130));
+    osc.start(); gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
+    osc.stop(audioCtx.currentTime + 0.4);
+}
+
+function isPrime(n){ for(let i=2; i*i<=n; i++) if(n%i===0) return false; return n>1; }
+function factors(n){ let r=[], d=2; while(n>1){ while(n%d===0){ r.push(d); n/=d; } d++; } return r; }
+
+function rndComposite(){
+ while(true){
+   let n = Math.floor(Math.random()*90)+10;
+   if(!isPrime(n) && !used.includes(n)){ used.push(n); return n; }
+ }
+}
+
+function startGame() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("gameScreen").style.display = "block";
+    hearts = 3; round = 1; score = 0; used = [];
+    startRound();
+}
+
+function startRound(){
+ found = [];
+ target = rndComposite();
+ need = factors(target);
+ updateUI();
+ buildGrid();
+ document.getElementById('msg').textContent = "";
+}
+
+function updateUI(){
+ document.getElementById('hearts').textContent = "❤️".repeat(hearts) + "🖤".repeat(3-hearts);
+ document.getElementById('progress').textContent = `ข้อ ${round}/${TOTAL}`;
+ document.getElementById('score').textContent = `คะแนน ${score}`;
+ document.getElementById('target').textContent = target;
+ 
+ let tempNeed = [...need], tempFound = [...found], display = [];
+ tempNeed.forEach(num => {
+   let idx = tempFound.indexOf(num);
+   if(idx > -1){
+     display.push(`<span class="slot-num found">${num}</span>`);
+     tempFound.splice(idx,1);
+   } else {
+     display.push(`<span class="slot-num empty">?</span>`);
+   }
+ });
+ document.getElementById('slots').innerHTML = display.join('<span class="multiply">×</span>');
+}
+
+function buildGrid(){
+ const grid = document.getElementById('grid'); grid.innerHTML = "";
+ let arr = [...need];
+ while(arr.length < GRID) arr.push(primes[Math.floor(Math.random()*primes.length)]);
+ arr.sort(() => Math.random() - 0.5);
+ arr.forEach(v => {
+   let b = document.createElement('button');
+   b.className = 'cell'; b.textContent = v;
+   b.onclick = () => clickCell(b, v);
+   grid.appendChild(b);
+ });
+}
+
+function clickCell(btn, v){
+ if(btn.classList.contains('hit') || found.length === need.length || hearts <= 0) return;
+ 
+ let rem = [...need];
+ found.forEach(x => { let i = rem.indexOf(x); if(i > -1) rem.splice(i,1); });
+ 
+ if(rem.includes(v)){
+   found.push(v);
+   btn.classList.add('hit');
+   playSound("correct");
+   updateUI();
+   if(found.length === need.length){
+      score++;
+      setTimeout(() => {
+        if(round >= TOTAL) return winGame();
+        round++; startRound();
+      }, 600);
+   }
+ } else {
+   hearts--;
+   playSound("wrong");
+   document.getElementById('msg').textContent = "⚠️ ตัวประกอบไม่ถูกต้องนะจ๊ะ!";
+   const panel = document.getElementById("mainPanel");
+   panel.classList.remove('shake'); void panel.offsetWidth; panel.classList.add('shake');
+   updateUI();
+   if(hearts <= 0) setTimeout(gameOver, 600);
+ }
+}
+
+function winGame() {
+  playSound("win");
+  document.getElementById("gameScreen").style.display = "none";
+  const end = document.getElementById("endScreen"); end.style.display = "block";
+  end.innerHTML = `
+    <div class="big">🏆</div><h1>ยินดีด้วยจ้า!</h1><h2>ย่อยตัวประกอบสำเร็จครบ ${score} ข้อ</h2>
+    <p id="saveStatus" class="subtitle" style="margin-top:10px; color: #1d4ed8;">💾 กำลังบันทึกผลงานลงระบบ...</p>
+    <button class="start" id="retryBtn" onclick="location.reload()" disabled>♻️ เล่นอีกครั้ง</button>
+    <button class="back" onclick="goToMain()">📌 หน้าภารกิจ</button>`;
+  saveScoreToGoogleSheet();
+}
+
+function gameOver() {
+  playSound("lose");
+  document.getElementById("gameScreen").style.display = "none";
+  const end = document.getElementById("endScreen"); end.style.display = "block";
+  end.innerHTML = `
+    <h1>GAME OVER</h1><div class="big">💔</div><h2>พยายามอีกนิดนะเด็กๆ!</h2>
+    <p class="subtitle" style="margin-top:10px;">คุณทำได้สำเร็จทั้งหมด ${score} ข้อ</p>
+    <button class="start" onclick="location.reload()">♻️ ลองอีกครั้ง</button>
+    <button class="back" onclick="goToMain()">📌 หน้าภารกิจ</button>`;
+}
+
+async function saveScoreToGoogleSheet() {
+  const statusText = document.getElementById("saveStatus"), retryBtn = document.getElementById("retryBtn");
+  if (!studentNo || !row || !sheetName) {
+      statusText.innerHTML = "⚠️ ไม่พบข้อมูลนักเรียน (คะแนนไม่บันทึก)";
+      statusText.style.color = "#ef4444"; retryBtn.disabled = false; return;
+  }
+  try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "saveScore", studentNo, row: parseInt(row), col: 4, sheet: sheetName, score: score })
+      });
+      statusText.innerHTML = "✅ บันทึกผลสำเร็จเรียบร้อย!"; statusText.style.color = "#10b981";
+  } catch (e) {
+      statusText.innerHTML = "❌ เกิดข้อผิดพลาดในการบันทึกคะแนน"; statusText.style.color = "#ef4444";
+  } finally { retryBtn.disabled = false; }
+}
+
+function goToMain() { location.href = "main.html"; }
+</script>
+</body>
+</html>
