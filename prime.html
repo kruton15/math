@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>นักล่าจำนวนเฉพาะ</title>
+<link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --bg-grad: linear-gradient(135deg, #dbeafe 0%, #93c5fd 40%, #60a5fa 70%, #3b82f6 100%);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Itim', sans-serif; }
+    html, body { height: 100%; width: 100%; overflow: hidden; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+    body { min-height: 100vh; display: flex; justify-content: center; align-items: center; background: var(--bg-grad); position: relative; }
+    
+    .animal-bg { position: absolute; pointer-events: none; z-index: 1; animation: floatAnimal 6s infinite ease-in-out; filter: drop-shadow(0 4px 8px rgba(0,0,0,.15)); }
+    @media (max-width: 768px){ .animal-bg { opacity: 0.18 !important; } }
+    @keyframes floatAnimal { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(5deg); } }
+
+    .container { position: relative; z-index: 10; width: 95%; max-width: 500px; padding: 35px 30px; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 30px; border: 2px dashed var(--primary); box-shadow: 0 15px 35px rgba(37, 99, 235, 0.1); }
+    .shake { animation: shake 0.4s ease-in-out; }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+
+    .logo { font-size: 65px; margin-bottom: 5px; text-align: center; }
+    h1 { text-align: center; color: var(--primary); margin-bottom: 12px; font-size: 2.2rem; }
+    h2 { color: var(--primary-dark); font-size: 1.5rem; text-align: center; }
+    .subtitle { color: #4b5563; margin-bottom: 25px; font-size: 1.2rem; text-align: center; line-height: 1.6; }
+    
+    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    #hearts { font-size: 30px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+    #question { font-size: 22px; font-weight: bold; color: #1e3a8a; }
+    
+    .timer-box { width: 100%; height: 16px; background: #e2e8f0; border-radius: 30px; overflow: hidden; margin: 15px 0 25px 0; }
+    #timerBar { height: 100%; width: 100%; background: #22c55e; }
+    
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 15px; }
+    .card-btn { height: 85px; border: 2px solid transparent; border-radius: 18px; font-size: 34px; font-weight: bold; cursor: pointer; background: #ffffff; color: #1e3a8a; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; }
+    .card-btn:hover:not(:disabled) { transform: translateY(-4px); border-color: #3b82f6; background: #eff6ff; box-shadow: 0 12px 20px rgba(37, 99, 235, 0.15); }
+    .card-btn:active:not(:disabled) { transform: scale(0.95); }
+    .card-btn:disabled { cursor: not-allowed; color: #94a3b8; }
+    
+    .correct { background: linear-gradient(135deg, #22c55e, #16a34a) !important; color: white !important; box-shadow: 0 6px 15px rgba(34, 197, 94, 0.4) !important; }
+    .wrong { background: linear-gradient(135deg, #ef4444, #dc2626) !important; color: white !important; box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4) !important; }
+    .center { text-align: center; }
+    .big { font-size: 70px; margin-bottom: 10px; animation: pulse 0.8s infinite alternate; }
+
+    button.start, button.back { margin-top: 15px; border: none; border-radius: 50px; padding: 14px 45px; font-size: 22px; cursor: pointer; color: white; transition: all 0.3s ease; }
+    button.start { background: linear-gradient(135deg, #3b82f6, var(--primary-dark)); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3); }
+    button.back { background: linear-gradient(135deg, #94a3b8, #64748b); box-shadow: 0 8px 20px rgba(100, 116, 139, 0.3); }
+    button.start:hover, button.back:hover { transform: scale(1.06); }
+    @keyframes pulse { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.05); opacity: 1; } }
+    .footer { margin-top: 25px; color: #6b7280; font-size: 15px; text-align: center; }
+
+    @media (max-width: 480px) {
+        .container { width: 90%; padding: 30px 20px; }
+        h1 { font-size: 1.8rem; }
+        .card-btn { height: 75px; font-size: 28px; border-radius: 14px; }
+        button.start, button.back { width: 100%; padding: 12px 30px; }
+        #hearts { font-size: 24px; } #question { font-size: 18px; }
+    }
+</style>
+</head>
+<body>
+
+<div id="animal-container"></div>
+
+<div class="container" id="gameCard">
+    <div id="startScreen" class="center">
+        <h1>นักล่าจำนวนเฉพาะ</h1> <div class="logo">🎯</div>
+        <p class="subtitle">ค้นหาและคลิกจำนวนเฉพาะให้ถูกต้อง<br>มีเวลา 10 วินาทีต่อข้อ ⏱️<br>มีหัวใจให้ทั้งหมด 3 ดวง ❤️</p>
+        <button class="start" onclick="startGame()">🚀 เริ่มล่าจำนวนเฉพาะ</button><br>
+        <button class="back" onclick="goToMain()">📌 หน้าภารกิจ</button>
+        <div class="footer">🌈 ขอให้สนุกกับการล่าตัวเลขนะเด็กๆ 🌈</div>
+    </div>
+
+    <div id="gameScreen" style="display:none;">
+        <div class="top"><div id="hearts">❤️❤️❤️</div><div id="question">ข้อ 1/25</div></div>
+        <div class="timer-box"><div id="timerBar"></div></div>
+        <div class="grid" id="grid"></div>
+    </div>
+
+    <div id="endScreen" class="center" style="display:none;"></div>
+</div>
+
+<script>
+const primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97];
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1-M1YBoMw1LeTG_vT32aS8NzVTLMICLb5sMKGtton-tdApCGzG22V52k4c20HWpe4/exec";
+const urlParams = new URLSearchParams(window.location.search);
+const studentNo = urlParams.get('studentNo') || '';
+const row = urlParams.get('row') || '';
+const sheetName = urlParams.get('sheet') || '';
+
+let current = 0, score = 0, hearts = 3, timer = 10, countdown, currentPrime, audioCtx = null;
+
+// สุ่มไอคอนสัตว์พื้นหลัง
+(function createRandomAnimals() {
+    const container = document.getElementById('animal-container');
+    const animals = ['🐟','🐠','🐡','🐙','🦀','🫧'].sort(() => Math.random() - 0.5);
+    animals.forEach((animal, i) => {
+        const span = document.createElement('span');
+        span.className = 'animal-bg'; span.innerText = animal;
+        const angle = (i / animals.length) * Math.PI * 2;
+        span.style.left = `${50 + Math.cos(angle) * 38}%`; span.style.top = `${50 + Math.sin(angle) * 38}%`;
+        span.style.fontSize = `${[45, 55, 65, 75, 85][Math.floor(Math.random() * 5)]}px`;
+        span.style.opacity = 0.7; span.style.animationDuration = `${5 + Math.random() * 3}s`;
+        container.appendChild(span);
+    });
+})();
+
+function isPrime(n) {
+    if (n < 2) return false;
+    for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false;
+    return true;
+}
+
+function randomComposite() {
+    let n; do { n = Math.floor(Math.random() * 98) + 2; } while (isPrime(n)); return n;
+}
+
+function triggerCardShake() {
+    const card = document.getElementById("gameCard");
+    card.classList.remove("shake"); void card.offsetWidth; card.classList.add("shake");
+}
+
+function playSound(type) {
+    if (!audioCtx) audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = type === "correct" ? 700 : (type === "wrong" || type === "lose" ? 180 : (type === "win" ? 1000 : 120));
+    osc.start(); gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
+    osc.stop(audioCtx.currentTime + 0.4);
+}
+
+function startGame() {
+    if (!audioCtx) audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("gameScreen").style.display = "block";
+    current = 0; score = 0; hearts = 3;
+    document.getElementById("hearts").innerHTML = "❤️".repeat(hearts);
+    nextQuestion();
+}
+
+function nextQuestion() {
+    if (current >= 25) return winGame();
+    document.getElementById("question").innerHTML = `ข้อ ${current + 1}/25`;
+    currentPrime = primes[current];
+    let numbers = [currentPrime];
+    while (numbers.length < 9) {
+        let c = randomComposite();
+        if (!numbers.includes(c)) numbers.push(c);
+    }
+    numbers.sort(() => Math.random() - 0.5);
+
+    const grid = document.getElementById("grid"); grid.innerHTML = "";
+    numbers.forEach(num => {
+        const btn = document.createElement("button");
+        btn.className = "card-btn"; btn.textContent = num;
+        btn.onclick = () => checkAnswer(num, btn);
+        grid.appendChild(btn);
+    });
+    startTimer();
+}
+
+function startTimer() {
+    clearInterval(countdown); timer = 10;
+    const bar = document.getElementById("timerBar");
+    bar.style.transition = "none"; bar.style.width = "100%"; bar.style.background = "#22c55e";
+    bar.offsetHeight; bar.style.transition = "width 1s linear";
+
+    countdown = setInterval(() => {
+        timer--;
+        bar.style.width = (timer / 10) * 100 + "%";
+        if (timer <= 5) bar.style.background = "#f59e0b";
+        if (timer <= 2) bar.style.background = "#ef4444";
+
+        if (timer <= 0) {
+            clearInterval(countdown);
+            document.querySelectorAll(".card-btn").forEach(c => c.disabled = true);
+            triggerCardShake(); hearts--;
+            document.getElementById("hearts").innerHTML = "❤️".repeat(hearts);
+            playSound("wrong");
+            if (hearts <= 0) return gameOver();
+            setTimeout(() => { current++; nextQuestion(); }, 500);
+        }
+    }, 1000);
+}
+
+function checkAnswer(num, btn) {
+    clearInterval(countdown);
+    document.querySelectorAll(".card-btn").forEach(c => c.disabled = true);
+
+    if (num === currentPrime) {
+        btn.classList.add("correct"); playSound("correct"); score++;
+        setTimeout(() => { current++; nextQuestion(); }, 800);
+    } else {
+        btn.classList.add("wrong"); triggerCardShake(); hearts--;
+        document.getElementById("hearts").innerHTML = "❤️".repeat(hearts);
+        playSound("wrong");
+        document.querySelectorAll(".card-btn").forEach(c => { if (Number(c.textContent) === currentPrime) c.classList.add("correct"); });
+        if (hearts <= 0) setTimeout(gameOver, 1000);
+        else setTimeout(() => { current++; nextQuestion(); }, 1200);
+    }
+}
+
+function winGame() {
+    playSound("win");
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("endScreen").style.display = "block";
+    document.getElementById("endScreen").innerHTML = `
+        <div class="big">🏆</div><h1>ยินดีด้วยจ้า!</h1><h2>คุณผ่านแล้ว ${score} ข้อ</h2>
+        <p id="saveStatus" class="subtitle" style="margin-top:10px; color: #1d4ed8;">💾 กำลังส่งคะแนนเข้าสู่ระบบ...</p>
+        <button class="start" id="retryBtn" onclick="location.reload()" disabled>♻️ เล่นอีกครั้ง</button><br>
+        <button class="back" onclick="goToMain()">📌 หน้าภารกิจ</button>`;
+    saveScoreToGoogleSheet();
+}
+
+async function saveScoreToGoogleSheet() {
+    const statusText = document.getElementById("saveStatus"), retryBtn = document.getElementById("retryBtn");
+    if (!studentNo || !row || !sheetName) {
+        statusText.innerHTML = "⚠️ ไม่พบข้อมูลนักเรียน (คะแนนอาจไม่ถูกบันทึก)";
+        statusText.style.color = "#ef4444"; retryBtn.disabled = false; return;
+    }
+
+    try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "saveScore", studentNo, row: parseInt(row), col: 3, sheet: sheetName, score: 5 })
+        });
+        statusText.innerHTML = "✅ ส่งข้อมูลคะแนนเรียบร้อยแล้ว!"; statusText.style.color = "#22c55e";
+    } catch (e) {
+        statusText.innerHTML = "❌ เกิดข้อผิดพลาดในการบันทึกคะแนน"; statusText.style.color = "#ef4444";
+    } finally { retryBtn.disabled = false; }
+}
+
+function gameOver() {
+    playSound("lose");
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("endScreen").style.display = "block";
+    document.getElementById("endScreen").innerHTML = `
+        <h1>GAME OVER</h1><div class="big">💔</div><h2>พยายามอีกนิดนะ!</h2>
+        <p class="subtitle" style="margin-top:10px;">คุณตอบถูกทั้งหมด ${score} ข้อ</p>
+        <button class="start" onclick="location.reload()">♻️ ลองอีกครั้ง</button><br>
+        <button class="back" onclick="goToMain()">📌 หน้าภารกิจ</button>`;
+}
+
+function goToMain() { location.href = "main.html"; }
+</script>
+</body>
+</html>

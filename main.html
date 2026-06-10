@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>ภารกิจประจำวัน</title>
+<link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --bg-grad: linear-gradient(135deg, #dbeafe 0%, #93c5fd 40%, #60a5fa 70%, #3b82f6 100%);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Itim', sans-serif; }
+    html, body { width: 100%; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+    body { min-height: 100vh; padding: 20px; background: var(--bg-grad); position: relative; overflow-x: hidden; }
+
+    .animal-bg { position: absolute; pointer-events: none; z-index: 1; animation: floatAnimal 6s infinite ease-in-out; filter: drop-shadow(0 4px 8px rgba(0,0,0,.15)); }
+    @media (max-width: 768px){ .animal-bg { opacity: 0.15 !important; } }
+    @keyframes floatAnimal { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(5deg); } }
+
+    .container { position: relative; z-index: 10; max-width: 900px; margin: auto; }
+    .card { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 24px; padding: 25px; margin-bottom: 20px; border: 2px dashed var(--primary); box-shadow: 0 12px 30px rgba(37, 99, 235, 0.1); }
+    .header { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    
+    .student-avatar-wrap { width: 100px; height: 100px; margin-bottom: 10px; }
+    .student-avatar { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(37, 99, 235, 0.15)); animation: avatarFloat 4s infinite ease-in-out; }
+    @keyframes avatarFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+    .student-name { font-size: 1.6rem; color: var(--primary-dark); margin-bottom: 4px; }
+    .student-meta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
+    .meta-badge { background: rgba(255, 255, 255, 0.85); color: #1e3a8a; font-size: 0.95rem; padding: 3px 14px; border-radius: 50px; border: 1px solid rgba(37, 99, 235, 0.15); box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+    
+    .section-title { text-align: center; color: var(--primary); font-size: 1.5rem; margin-bottom: 4px; }
+    .activity-count { text-align: center; color: #4b5563; font-size: 1rem; margin-bottom: 20px; }
+    .activity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
+    
+    .activity-card { background: #ffffff; border-radius: 20px; padding: 18px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05); border: 1px solid rgba(37, 99, 235, 0.06); transition: all 0.25s ease; display: flex; flex-direction: column; justify-content: space-between; }
+    .activity-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.12); }
+    .activity-title { color: var(--primary-dark); font-size: 1.25rem; margin-bottom: 8px; line-height: 1.3; font-weight: bold; }
+    .activity-time { color: #475569; font-size: 0.95rem; margin-bottom: 12px; background: #f8fafc; padding: 6px 10px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .activity-footer { display: flex; align-items: center; gap: 8px; }
+    
+    .badge { padding: 6px 12px; border-radius: 12px; color: white; font-size: 0.85rem; font-weight: bold; white-space: nowrap; }
+    .badge-active { background: #10b981; }
+    .badge-warning { background: #f59e0b; }
+    .badge-expired { background: #ef4444; }
+
+    .activity-btn { flex-grow: 1; text-align: center; text-decoration: none; padding: 7px 12px; border-radius: 12px; color: white; font-size: 1.1rem; background: linear-gradient(135deg, #3b82f6, var(--primary-dark)); box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); transition: all 0.2s ease; }
+    .activity-btn:hover { transform: scale(1.03); box-shadow: 0 6px 14px rgba(37, 99, 235, 0.3); }
+
+    .skeleton { height: 130px; border-radius: 20px; background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 400% 100%; animation: skeleton 1.4s infinite; }
+    @keyframes skeleton { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+    .logout-btn { border: none; border-radius: 50px; padding: 10px 35px; font-size: 16px; cursor: pointer; color: white; background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); transition: all 0.2s ease; }
+    .logout-btn:hover { transform: scale(1.05); box-shadow: 0 6px 14px rgba(239, 68, 68, 0.3); }
+    .center { text-align: center; margin-bottom: 20px; }
+    .empty { text-align: center; color: #4b5563; font-size: 1.1rem; grid-column: 1 / -1; padding: 30px 0; }
+    @media(max-width:768px){ .activity-grid { grid-template-columns: 1fr; } .card { padding: 20px 15px; } .student-avatar-wrap { width: 90px; height: 90px; } .student-name { font-size: 1.4rem; } }
+</style>
+</head>
+<body>
+
+<div id="animal-container"></div>
+
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <div class="student-avatar-wrap">
+                <img id="studentAvatar" class="student-avatar" src="" alt="รูปนักเรียน" style="display: none;">
+            </div>
+            <h1 class="student-name" id="studentName"></h1>
+            <div class="student-meta">
+                <span class="meta-badge">🏫 ชั้นเรียน: <strong id="sheetName"></strong></span>
+                <span class="meta-badge">🆔 รหัส นร.: <strong id="studentNo"></strong></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 class="section-title">🎯 ภารกิจประจำวัน</h2>
+        <div class="activity-count" id="activityCount">กำลังตรวจเช็กภารกิจ...</div>
+        <div id="activityList" class="activity-grid"></div>
+    </div>
+
+    <div class="center">
+        <button class="logout-btn" onclick="logout()">🔚 ออกจากระบบ</button>
+    </div>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbx1-M1YBoMw1LeTG_vT32aS8NzVTLMICLb5sMKGtton-tdApCGzG22V52k4c20HWpe4/exec";
+
+// จัดการ Session / Cache
+let sheetName = sessionStorage.getItem("sheetName") || localStorage.getItem("sheetName");
+let studentNo = sessionStorage.getItem("studentNo") || localStorage.getItem("studentNo");
+let studentName = sessionStorage.getItem("studentName") || localStorage.getItem("studentName");
+let row = sessionStorage.getItem("row") || localStorage.getItem("row");
+
+if(!sheetName || !studentNo || !studentName || !row) location.href = "index.html";
+
+['sheetName', 'studentNo', 'studentName', 'row'].forEach(k => localStorage.setItem(k, eval(k)));
+document.getElementById("sheetName").textContent = sheetName;
+document.getElementById("studentNo").textContent = studentNo;
+document.getElementById("studentName").textContent = studentName;
+
+// พื้นหลังสัตว์แบบสุ่ม
+(function createRandomAnimals() {
+    const container = document.getElementById('animal-container');
+    const animals = ['🐟','🐠','🐡','🐙','🦀','🫧'].sort(() => Math.random() - 0.5);
+    animals.forEach((animal, i) => {
+        const span = document.createElement('span');
+        span.className = 'animal-bg'; span.innerText = animal;
+        const angle = (i / animals.length) * Math.PI * 2;
+        span.style.left = `${50 + Math.cos(angle) * 40}%`; span.style.top = `${50 + Math.sin(angle) * 40}%`;
+        span.style.fontSize = `${[40, 50, 60, 70][Math.floor(Math.random() * 4)]}px`;
+        span.style.opacity = 0.6; span.style.animationDuration = `${5 + Math.random() * 3}s`;
+        container.appendChild(span);
+    });
+})();
+
+// ตรวจสอบรูปโปรไฟล์เด็กชาย/หญิง
+(function checkStudentAvatar(name) {
+    const img = document.getElementById("studentAvatar");
+    const isBoy = name.startsWith("เด็กชาย") || name.startsWith("ด.ช.");
+    const isGirl = name.startsWith("เด็กหญิง") || name.startsWith("ด.ญ.");
+    if (isBoy || isGirl) {
+        img.src = isBoy ? "img/boy.png" : "img/girl.png";
+        img.style.display = "block";
+    }
+})(studentName);
+
+// คำนวณวันที่แบบย่อ
+function parseDate(str) {
+    if (!str) return null;
+    let d = new Date(str);
+    if (isNaN(d.getTime())) return null;
+    if (d.getFullYear() > 2400) d.setFullYear(d.getFullYear() - 543);
+    return d;
+}
+
+function formatThaiDate(str){
+    let d = parseDate(str);
+    if (!d) return "-";
+    return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getFullYear() + 543).slice(-2)}`;
+}
+
+function getDaysLeft(str){
+    let d = parseDate(str);
+    if (!d) return -1;
+    const today = new Date(); today.setHours(0,0,0,0); d.setHours(0,0,0,0);
+    return Math.round((d - today) / 86400000);
+}
+
+function displayActivities(activities, container, countEl) {
+    if(!activities || !activities.length) {
+        countEl.textContent = "ไม่มีภารกิจ";
+        container.innerHTML = `<div class="empty">📭 ไม่มีภารกิจในขณะนี้</div>`;
+        return;
+    }
+
+    const actives = activities.filter(item => item && item.endDate && getDaysLeft(item.endDate) >= 0);
+    countEl.textContent = `เปิดอยู่ทั้งหมด ${actives.length} รายการ`;
+
+    if(!actives.length) {
+        container.innerHTML = `<div class="empty">🎉 ทำภารกิจครบหมดแล้ว!</div>`;
+        return;
+    }
+
+    container.innerHTML = actives.map(item => {
+        const days = getDaysLeft(item.endDate);
+        const status = days <= 3 ? { t:"ด่วน", c:"badge-warning" } : { t:"เปิด", c:"badge-active" };
+        return `
+        <div class="activity-card">
+            <div>
+                <div class="activity-title">📌 ${item.activity}</div>
+                <div class="activity-time"><span>📅 สิ้นสุด: ${formatThaiDate(item.endDate)}</span><strong>(เหลือ ${days} วัน)</strong></div>
+            </div>
+            <div class="activity-footer">
+                <span class="badge ${status.c}">${status.t}</span>
+                <a class="activity-btn" href="${item.link}?studentNo=${encodeURIComponent(studentNo)}&row=${encodeURIComponent(row)}&sheet=${encodeURIComponent(sheetName)}">🚀 เริ่มเลย</a>
+            </div>
+        </div>`;
+    }).join("");
+}
+
+async function loadActivities(){
+    const container = document.getElementById("activityList");
+    const countEl = document.getElementById("activityCount");
+    let cached = localStorage.getItem("cachedActivities");
+    let hasCache = false;
+
+    if (cached) {
+        try {
+            const arr = JSON.parse(cached);
+            if (arr && arr.length) { displayActivities(arr, container, countEl); hasCache = true; }
+        } catch(e) { console.error(e); }
+    }
+
+    if (!hasCache) container.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+
+    try {
+        const res = await fetch(`${API_URL}?action=activities`);
+        if(!res.ok) throw new Error(res.status);
+        const result = await res.json();
+        if (result && result.activities) {
+            localStorage.setItem("cachedActivities", JSON.stringify(result.activities));
+            displayActivities(result.activities, container, countEl);
+        }
+    } catch(err){
+        if (!hasCache) container.innerHTML = `<div class="empty">❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้</div>`;
+    }
+}
+
+function logout(){
+    sessionStorage.clear();
+    ['sheetName', 'studentNo', 'studentName', 'row', 'cachedActivities'].forEach(k => localStorage.removeItem(k));
+    location.href = "index.html";
+}
+
+loadActivities();
+setInterval(loadActivities, 300000); // อัปเดตทุก 5 นาที
+</script>
+</body>
+</html>
