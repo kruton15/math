@@ -231,10 +231,12 @@ function winGame() {
   document.getElementById("gameScreen").style.display = "none";
   const end = document.getElementById("endScreen"); end.style.display = "block";
   end.innerHTML = `
-    <div class="big">🏆</div><h1>ยินดีด้วยจ้า!</h1><h2>ย่อยตัวประกอบสำเร็จครบ ${score} ข้อ</h2>
+    <div class="big">🏆</div><h1>ยินดีด้วยจ้า!</h1><h2>แยกตัวประกอบสำเร็จครบ ${score} ข้อ</h2>
     <p id="saveStatus" class="subtitle" style="margin-top:10px; color: #1d4ed8;">💾 กำลังบันทึกผลงานลงระบบ...</p>
     <button class="start" id="retryBtn" onclick="location.reload()" disabled>♻️ เล่นอีกครั้ง</button>
     <button class="back" onclick="goToMain()">📌 หน้าภารกิจ</button>`;
+  
+  // เงื่อนไขที่ 1: ทำครบ 10 ข้อ (ชนะเกม) ให้บันทึกคะแนนทันที
   saveScoreToGoogleSheet();
 }
 
@@ -242,11 +244,21 @@ function gameOver() {
   playSound("lose");
   document.getElementById("gameScreen").style.display = "none";
   const end = document.getElementById("endScreen"); end.style.display = "block";
+  
+  // เช็คเงื่อนไขที่ 2: หัวใจหมด แต่ถ้าคะแนนตั้งแต่ 5 ขึ้นไป จะมีข้อความแจ้งการบันทึกคะแนน
+  const isScoreSavable = score >= 5;
+  
   end.innerHTML = `
     <h1>GAME OVER</h1><div class="big">💔</div><h2>พยายามอีกนิดนะเด็กๆ!</h2>
     <p class="subtitle" style="margin-top:10px;">คุณทำได้สำเร็จทั้งหมด ${score} ข้อ</p>
-    <button class="start" onclick="location.reload()">♻️ ลองอีกครั้ง</button>
+    ${isScoreSavable ? '<p id="saveStatus" class="subtitle" style="margin-top:10px; color: #1d4ed8;">💾 กำลังบันทึกผลงานลงระบบ...</p>' : ''}
+    <button class="start" id="retryBtn" onclick="location.reload()" ${isScoreSavable ? 'disabled' : ''}>♻️ ลองอีกครั้ง</button>
     <button class="back" onclick="goToMain()">📌 หน้าภารกิจ</button>`;
+  
+  // เงื่อนไขที่ 2: หัวใจหมด และคะแนนตั้งแต่ 5 ขึ้นไป ถึงจะสั่งบันทึกลง Google Sheet
+  if (isScoreSavable) {
+    saveScoreToGoogleSheet();
+  }
 }
 
 async function saveScoreToGoogleSheet() {
