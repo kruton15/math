@@ -10,57 +10,192 @@
 :root {
   --primary: #2563eb;
   --primary-dark: #1d4ed8;
+  --primary-light: #eff6ff;
   --success: #10b981;
   --danger: #ef4444;
   --bg-grad: linear-gradient(135deg, #dbeafe 0%, #93c5fd 40%, #60a5fa 70%, #3b82f6 100%);
-  --panel: rgba(255, 255, 255, 0.75);
+  --panel: rgba(255, 255, 255, 0.9);
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 10px 15px -3px rgba(37, 99, 235, 0.1), 0 4px 6px -4px rgba(37, 99, 235, 0.05);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Itim', sans-serif; }
-html, body { height: 100%; width: 100%; overflow: hidden; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
-body { min-height: 100vh; display: flex; justify-content: center; align-items: center; background: var(--bg-grad); position: relative; }
 
-.animal-bg { position: absolute; pointer-events: none; z-index: 1; animation: floatAnimal 6s infinite ease-in-out; filter: drop-shadow(0 4px 8px rgba(0,0,0,.15)); }
-@media (max-width: 768px){ .animal-bg { opacity: 0.18 !important; } }
-@keyframes floatAnimal { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(5deg); } }
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  font-family: 'Itim', sans-serif; 
+  -webkit-tap-highlight-color: transparent;
+}
 
-.container { position: relative; z-index: 10; width: 95%; max-width: 480px; padding: 25px 20px; background: var(--panel); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 30px; border: 2px dashed var(--primary); box-shadow: 0 15px 35px rgba(37, 99, 235, 0.1); }
-.logo { font-size: 65px; margin-bottom: 5px; text-align: center; }
-h1 { text-align: center; color: var(--primary); margin-bottom: 12px; font-size: 2.2rem; }
-h2 { color: var(--primary-dark); font-size: 1.5rem; text-align: center; }
-.subtitle { color: #4b5563; margin-bottom: 25px; font-size: 1.2rem; text-align: center; line-height: 1.6; }
+html, body { 
+  min-height: 100vh; 
+  width: 100%; 
+  user-select: none; 
+  -webkit-user-select: none;
+  -webkit-touch-callout: none; 
+  touch-action: manipulation; 
+}
 
-.top { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 1.1rem; margin-bottom: 15px; background: rgba(255,255,255,0.5); padding: 10px 18px; border-radius: 20px; color: #1e3a8a; }
-#hearts { letter-spacing: 2px; font-size: 1.2rem; }
+body { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  background: var(--bg-grad); 
+  padding: 16px; 
+  overflow-y: auto; 
+  overflow-x: hidden;
+}
 
-.panel { padding: 15px 10px; border-radius: 20px; margin-bottom: 15px; text-align: center; border: 2px dashed var(--primary); background: rgba(255,255,255,0.4); }
-.panel-label { font-size: 1.1rem; color: #4b5563; }
-.target { font-size: 55px; font-weight: 800; color: var(--primary-dark); line-height: 1; margin: 5px 0; }
-.slots { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 10px; flex-wrap: wrap; min-height: 38px; }
+#animal-container {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+.animal-bg { 
+  position: absolute; 
+  pointer-events: none; 
+  animation: floatAnimal 6s infinite ease-in-out; 
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.12)); 
+}
+@keyframes floatAnimal { 
+  0%, 100% { transform: translateY(0) rotate(0deg); } 
+  50% { transform: translateY(-15px) rotate(5deg); } 
+}
+
+.container { 
+  position: relative; 
+  z-index: 10; 
+  width: 100%; 
+  max-width: 500px; 
+  padding: clamp(16px, 4vw, 28px); 
+  background: var(--panel); 
+  backdrop-filter: blur(20px); 
+  -webkit-backdrop-filter: blur(20px); 
+  border-radius: 28px; 
+  border: 3px dashed var(--primary); 
+  box-shadow: var(--shadow-lg); 
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+}
+
+#gameScreen { display: flex; flex-direction: column; }
+.top, .panel, .grid { flex-shrink: 0; }
+
+.logo { font-size: clamp(50px, 10vw, 65px); margin-bottom: 8px; text-align: center; }
+h1 { text-align: center; color: var(--primary); margin-bottom: 8px; font-size: clamp(1.8rem, 5vw, 2.3rem); font-weight: bold; }
+h2 { color: var(--primary-dark); font-size: clamp(1.2rem, 3.5vw, 1.5rem); text-align: center; }
+.subtitle { color: #4b5563; margin-bottom: 20px; font-size: clamp(0.95rem, 2.5vw, 1.1rem); text-align: center; line-height: 1.5; }
+
+.top { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  font-weight: 600; 
+  font-size: clamp(0.9rem, 2.5vw, 1.05rem); 
+  margin-bottom: 12px; 
+  background: rgba(255,255,255,0.7); 
+  padding: 10px 16px; 
+  border-radius: 16px; 
+  color: #1e3a8a; 
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+}
+#hearts { letter-spacing: 2px; font-size: clamp(1rem, 3vw, 1.2rem); white-space: nowrap; }
+
+.panel { 
+  padding: clamp(12px, 3vw, 18px) 12px; 
+  border-radius: 20px; 
+  margin-bottom: 14px; 
+  text-align: center; 
+  border: 2px dashed var(--primary); 
+  background: rgba(255,255,255,0.5); 
+  box-shadow: var(--shadow-sm);
+}
+.panel-label { font-size: clamp(0.9rem, 2.5vw, 1.05rem); color: #4b5563; font-weight: bold; }
+.target { font-size: clamp(35px, 9vw, 55px); font-weight: 800; color: var(--primary-dark); line-height: 1.2; margin: 4px 0; }
+.slots { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 6px; 
+  margin-top: 6px; 
+  flex-wrap: wrap; 
+  min-height: 38px; 
+  background: #fff;
+  padding: 6px 12px;
+  border-radius: 12px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+}
 .slot-num { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; }
 .slot-num.empty { background: #ffffff; border: 2px dashed rgba(37, 99, 235, 0.3); color: rgba(37, 99, 235, 0.3); }
 .slot-num.found { background: var(--success); color: #fff; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .multiply { color: #3b82f6; font-weight: bold; font-size: 1.3rem; }
 
-.grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
-.cell { aspect-ratio: 1; border: none; border-radius: 14px; font-size: clamp(16px, 4.5vw, 22px); font-weight: 700; background: #ffffff; color: #1e3a8a; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; }
-.cell:hover { transform: translateY(-2px); background: #eff6ff; }
-.cell:active { transform: scale(0.95); }
+.grid { 
+  display: grid; 
+  grid-template-columns: repeat(5, 1fr); 
+  gap: clamp(6px, 1.8vw, 10px); 
+  margin-bottom: 14px; 
+  width: 100%;
+}
+.cell { 
+  aspect-ratio: 1 / 1; 
+  border: none; 
+  border-radius: 14px; 
+  font-size: clamp(14px, 4vw, 22px); 
+  font-weight: 700; 
+  background: #ffffff; 
+  color: #1e3a8a; 
+  cursor: pointer; 
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+  box-shadow: var(--shadow-sm); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  border: 2px solid transparent;
+}
+
+/* 📱 ปรับแต่งพิเศษสำหรับหน้าจอมือถือเล็กมาก */
+@media (max-width: 360px) {
+  body { padding: 8px; }
+  .container { padding: 14px; border-radius: 20px; }
+  .grid { gap: 6px; }
+  .cell { border-radius: 10px; }
+}
+
+/* 💻 ปรับแต่งพิเศษเมื่อเล่นบนหน้าจอคอมพิวเตอร์ */
+@media (min-width: 768px) {
+  .container { max-width: 440px; padding: 24px; }
+  .grid { gap: 10px; margin-bottom: 16px; }
+  .cell { aspect-ratio: auto; height: 65px; font-size: 20px; border-radius: 14px; }
+  .cell:hover { transform: translateY(-3px); background: var(--primary-light); border-color: var(--primary); box-shadow: var(--shadow-md); }
+  button.start:hover, button.back:hover { transform: translateY(-2px); filter: brightness(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+}
+
+.cell:active { transform: scale(0.92); }
 .cell.hit { background: var(--success) !important; color: #fff; transform: scale(0.9); opacity: 0.3; cursor: default; box-shadow: none; }
 
-.msg { text-align: center; height: 24px; font-size: 1.1rem; font-weight: 600; color: var(--danger); margin-bottom: 10px; }
+.msg { text-align: center; height: 24px; font-size: clamp(0.9rem, 2.5vw, 1.05rem); font-weight: 600; color: var(--danger); margin-bottom: 8px; }
 .center { text-align: center; }
-.big { font-size: 70px; margin-bottom: 10px; animation: pulse 0.8s infinite alternate; }
+.big { font-size: clamp(55px, 12vw, 75px); margin-bottom: 10px; animation: pulse 0.8s infinite alternate; }
 
-button.start, button.back { margin-top: 15px; border: none; border-radius: 50px; padding: 14px 45px; font-size: 22px; cursor: pointer; color: white; transition: all 0.3s ease; }
-button.start { background: linear-gradient(135deg, #3b82f6, var(--primary-dark)); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3); }
-button.back { background: linear-gradient(135deg, #94a3b8, #64748b); box-shadow: 0 8px 20px rgba(100, 116, 139, 0.3); }
-button.start:hover, button.back:hover { transform: scale(1.06); }
+button.start, button.back { border: none; border-radius: 50px; padding: 12px 28px; font-size: clamp(16px, 3.5vw, 19px); cursor: pointer; color: white; transition: all 0.2s ease; width: 100%; font-weight: bold; display: inline-flex; justify-content: center; align-items: center; }
+button.start { background: linear-gradient(135deg, #3b82f6, var(--primary-dark)); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3); width: auto; padding: 14px 50px; margin-top: 5px; }
+button.back { background: linear-gradient(135deg, #94a3b8, #64748b); box-shadow: 0 5px 15px rgba(100, 116, 139, 0.2); width: auto; padding: 11px 40px; margin-top: 14px; }
 
 @keyframes popIn { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-@keyframes pulse { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.05); opacity: 1; } }
+@keyframes pulse { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.04); opacity: 1; } }
 .shake { animation: shake 0.4s ease-in-out; }
-@keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
-.footer { margin-top: 20px; color: #6b7280; font-size: 15px; text-align: center; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+.footer { margin-top: 18px; color: #6b7280; font-size: 13px; text-align: center; font-weight: bold; }
+
+@media (max-width: 768px){ .animal-bg { opacity: 0.15 !important; } }
 </style>
 </head>
 <body>
@@ -68,7 +203,6 @@ button.start:hover, button.back:hover { transform: scale(1.06); }
 <div id="animal-container"></div>
 
 <div class="container" id="gameCard">
-  <!-- หน้าคำอธิบายเริ่มต้นเกม -->
   <div id="startScreen" class="center">
     <h1>ถอดรหัสตัวประกอบ</h1>
     <div class="logo">🧩</div>
@@ -78,7 +212,6 @@ button.start:hover, button.back:hover { transform: scale(1.06); }
     <div class="footer">🌈 มาถอดรหัสคณิตศาสตร์แสนสนุกกันเลย 🌈</div>
   </div>
 
-  <!-- หน้าจอสำหรับเล่นเกม -->
   <div id="gameScreen" style="display:none;">
     <div class="top">
       <div id="hearts">❤️❤️❤️</div>
@@ -96,7 +229,6 @@ button.start:hover, button.back:hover { transform: scale(1.06); }
     <div class="msg" id="msg"></div>
   </div>
 
-  <!-- หน้าจอสรุปผลเกม -->
   <div id="endScreen" class="center" style="display:none;"></div>
 </div>
 
@@ -236,7 +368,6 @@ function winGame() {
     <button class="start" id="retryBtn" onclick="location.reload()" disabled>♻️ เล่นอีกครั้ง</button>
     <button class="back" onclick="goToMain()">📌 หน้าภารกิจ</button>`;
   
-  // เงื่อนไขที่ 1: ทำครบ 10 ข้อ (ชนะเกม) ให้บันทึกคะแนนทันที
   saveScoreToGoogleSheet();
 }
 
@@ -245,7 +376,6 @@ function gameOver() {
   document.getElementById("gameScreen").style.display = "none";
   const end = document.getElementById("endScreen"); end.style.display = "block";
   
-  // เช็คเงื่อนไขที่ 2: หัวใจหมด แต่ถ้าคะแนนตั้งแต่ 5 ขึ้นไป จะมีข้อความแจ้งการบันทึกคะแนน
   const isScoreSavable = score >= 5;
   
   end.innerHTML = `
@@ -255,7 +385,6 @@ function gameOver() {
     <button class="start" id="retryBtn" onclick="location.reload()" ${isScoreSavable ? 'disabled' : ''}>♻️ ลองอีกครั้ง</button>
     <button class="back" onclick="goToMain()">📌 หน้าภารกิจ</button>`;
   
-  // เงื่อนไขที่ 2: หัวใจหมด และคะแนนตั้งแต่ 5 ขึ้นไป ถึงจะสั่งบันทึกลง Google Sheet
   if (isScoreSavable) {
     saveScoreToGoogleSheet();
   }
