@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>ตามล่าหา ห.ร.ม.</title>
+<link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-light: #eff6ff;
+  --success: #10b981;
+  --danger: #ef4444;
+  --bg-grad: linear-gradient(135deg, #dbeafe 0%, #93c5fd 40%, #60a5fa 70%, #3b82f6 100%);
+  --panel: rgba(255, 255, 255, 0.9);
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 10px 15px -3px rgba(37, 99, 235, 0.1), 0 4px 6px -4px rgba(37, 99, 235, 0.05);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+}
+
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  font-family: 'Itim', sans-serif; 
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body { 
+  min-height: 100vh; 
+  width: 100%; 
+  user-select: none; 
+  -webkit-user-select: none;
+  -webkit-touch-callout: none; 
+  touch-action: manipulation; 
+}
+
+body { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  background: var(--bg-grad); 
+  padding: 16px; 
+  overflow-y: auto; 
+  overflow-x: hidden;
+}
+
+#animal-container {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+.animal-bg { 
+  position: absolute; 
+  pointer-events: none; 
+  animation: floatAnimal 6s infinite ease-in-out; 
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.12)); 
+}
+@keyframes floatAnimal { 
+  0%, 100% { transform: translateY(0) rotate(0deg); } 
+  50% { transform: translateY(-15px) rotate(5deg); } 
+}
+
+.container { 
+  position: relative; 
+  z-index: 10; 
+  width: 100%; 
+  max-width: 500px; 
+  padding: clamp(16px, 4vw, 28px); 
+  background: var(--panel); 
+  backdrop-filter: blur(20px); 
+  -webkit-backdrop-filter: blur(20px); 
+  border-radius: 28px; 
+  border: 3px dashed var(--primary); 
+  box-shadow: var(--shadow-lg); 
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+}
+
+#gameScreen { display: flex; flex-direction: column; }
+.top, .panel, .grid, button.submit { flex-shrink: 0; } 
+
+.logo { font-size: clamp(50px, 10vw, 65px); margin-bottom: 8px; text-align: center; }
+h1 { text-align: center; color: var(--primary); margin-bottom: 8px; font-size: clamp(1.8rem, 5vw, 2.3rem); font-weight: bold; }
+h2 { color: var(--primary-dark); font-size: clamp(1.2rem, 3.5vw, 1.5rem); text-align: center; }
+.subtitle { color: #4b5563; margin-bottom: 20px; font-size: clamp(0.95rem, 2.5vw, 1.1rem); text-align: center; line-height: 1.5; }
+
+.top { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  font-weight: 600; 
+  font-size: clamp(0.9rem, 2.5vw, 1.05rem); 
+  margin-bottom: 12px; 
+  background: rgba(255,255,255,0.7); 
+  padding: 10px 16px; 
+  border-radius: 16px; 
+  color: #1e3a8a; 
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+}
+#hearts { letter-spacing: 2px; font-size: clamp(1rem, 3vw, 1.2rem); white-space: nowrap; }
+
+.panel { 
+  padding: clamp(12px, 3vw, 18px) 12px; 
+  border-radius: 20px; 
+  margin-bottom: 14px; 
+  text-align: center; 
+  border: 2px dashed var(--primary); 
+  background: rgba(255,255,255,0.5); 
+  box-shadow: var(--shadow-sm);
+}
+.panel-label { font-size: clamp(0.9rem, 2.5vw, 1.05rem); color: #4b5563; font-weight: bold; }
+.target { font-size: clamp(28px, 7vw, 40px); font-weight: 800; color: var(--primary-dark); line-height: 1.2; margin: 4px 0; }
+.slots { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 6px; 
+  margin-top: 6px; 
+  flex-wrap: wrap; 
+  min-height: 32px; 
+  font-size: clamp(1rem, 2.8vw, 1.2rem); 
+  color: #1e3a8a; 
+  font-weight: bold; 
+  background: #fff; 
+  padding: 6px 12px; 
+  border-radius: 12px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+}
+
+.grid { 
+  display: grid; 
+  grid-template-columns: repeat(4, 1fr); 
+  gap: clamp(6px, 2vw, 12px); 
+  margin-bottom: 14px; 
+  width: 100%;
+}
+.cell { 
+  aspect-ratio: 1 / 1; 
+  border: none; 
+  border-radius: 14px; 
+  font-size: clamp(14px, 4vw, 20px); 
+  font-weight: 700; 
+  background: #ffffff; 
+  color: #1e3a8a; 
+  cursor: pointer; 
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+  box-shadow: var(--shadow-sm); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  border: 2px solid transparent;
+}
+
+/* 📱 ปรับแต่งพิเศษสำหรับหน้าจอมือถือเล็กมาก */
+@media (max-width: 360px) {
+  body { padding: 8px; }
+  .container { padding: 14px; border-radius: 20px; }
+  .grid { gap: 6px; }
+  .cell { border-radius: 10px; }
+}
+
+/* 💻 ปรับแต่งพิเศษเมื่อเล่นบนหน้าจอคอมพิวเตอร์ */
+@media (min-width: 768px) {
+  .container { max-width: 440px; padding: 24px; }
+  .grid { gap: 10px; margin-bottom: 16px; }
+  .cell { aspect-ratio: auto; height: 65px; font-size: 19px; border-radius: 14px; }
+  .cell:hover { transform: translateY(-3px); background: var(--primary-light); border-color: var(--primary); box-shadow: var(--shadow-md); }
+  button.start:hover, button.back:hover, button.submit:hover { transform: translateY(-2px); filter: brightness(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+}
+
+.cell:active { transform: scale(0.92); }
+.cell.active { background: linear-gradient(135deg, #3b82f6, var(--primary-dark)) !important; color: #fff; box-shadow: 0 6px 14px rgba(37, 99, 235, 0.4); border-color: #fff; }
+
+.msg { text-align: center; height: 24px; font-size: clamp(0.9rem, 2.5vw, 1.05rem); font-weight: 600; color: var(--danger); margin-bottom: 8px; }
+.center { text-align: center; }
+.big { font-size: clamp(55px, 12vw, 75px); margin-bottom: 10px; animation: pulse 0.8s infinite alternate; }
+
+button.start, button.back, button.submit { border: none; border-radius: 50px; padding: 12px 28px; font-size: clamp(16px, 3.5vw, 19px); cursor: pointer; color: white; transition: all 0.2s ease; width: 100%; font-weight: bold; display: inline-flex; justify-content: center; align-items: center; }
+button.start { background: linear-gradient(135deg, #3b82f6, var(--primary-dark)); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3); width: auto; padding: 14px 50px; margin-top: 5px; }
+button.back { background: linear-gradient(135deg, #94a3b8, #64748b); box-shadow: 0 5px 15px rgba(100, 116, 139, 0.2); width: auto; padding: 11px 40px; margin-top: 14px; }
+button.submit { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); padding: 14px; }
+
+.modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(5px); padding: 20px; }
+.modal.show { display: flex; }
+.modal-card { background: #fff; padding: 24px; border-radius: 26px; max-width: 420px; width: 100%; text-align: center; box-shadow: var(--shadow-lg); border: 3px solid var(--primary); max-height: 85vh; display: flex; flex-direction: column; }
+.modal-card h3 { color: var(--danger); font-size: clamp(1.3rem, 4vw, 1.6rem); margin-bottom: 12px; flex-shrink: 0; font-weight: bold; }
+#solution { font-size: clamp(1.05rem, 3vw, 1.2rem); color: #374151; line-height: 1.6; margin-bottom: 16px; text-align: left; background: #f8fafc; padding: 16px; border-radius: 16px; overflow-y: auto; flex-grow: 1; border: 1px solid #e2e8f0; }
+
+@keyframes pulse { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.04); opacity: 1; } }
+.shake { animation: shake 0.4s ease-in-out; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+.footer { margin-top: 18px; color: #6b7280; font-size: 13px; text-align: center; font-weight: bold; }
+
+@media (max-width: 768px){ .animal-bg { opacity: 0.15 !important; } }
+</style>
+</head>
+<body>
+
+<div id="animal-container"></div>
+
+<div class="container" id="gameCard">
+  <div id="startScreen" class="center">
+    <h1>ตามล่าหา ห.ร.ม.</h1>
+    <div class="logo">🎯</div>
+    <p class="subtitle">หา ห.ร.ม. ของตัวเลขที่กำหนด<br>สุ่มเลข 2 หลัก และ 3 หลัก รวม 7 ข้อ ⏱️<br>มีหัวใจให้เพียง 3 ดวงเท่านั้น ❤️</p>
+    <button class="start" onclick="startGame()">🎮 เริ่มภารกิจ</button><br>
+    <button class="back" onclick="goToMain()">📌 หน้าภารกิจ</button>
+    <div class="footer">🌈 มาตามล่าหา ห.ร.ม. แสนสนุกกันเลย 🌈</div>
+  </div>
+
+  <div id="gameScreen" style="display:none;">
+    <div class="top">
+      <div id="hearts">❤️❤️❤️</div>
+      <div id="progress">ข้อ 1/7</div>
+      <div id="score">คะแนน 0</div>
+    </div>
+    
+    <div class="panel" id="mainPanel">
+      <div class="panel-label" id="panelLabel">🎯 จงหา ห.ร.ม. ของตัวเลขต่อไปนี้</div>
+      <div class="target" id="nums">0, 0</div>
+      <div class="slots">เลือกตอบ: <span id="picked" style="color:var(--primary-dark)">-</span></div>
+    </div>
+    
+    <div class="grid" id="cards"></div>
+    <div class="msg" id="msg"></div>
+    <button class="submit" onclick="checkAnswer()">🚀 ส่งคำตอบ</button>
+  </div>
+
+  <div id="endScreen" class="center" style="display:none;"></div>
+</div>
+
+<div id="modal" class="modal">
+ <div class="modal-card">
+  <h3>💡 วิธีหา ห.ร.ม. จ้า</h3>
+  <div id="solution"></div>
+  <button class="submit" style="background: linear-gradient(135deg, #3b82f6, var(--primary-dark)); margin-top:0;" onclick="closeModal()">เข้าใจแล้วลุยต่อ! 🏃</button>
+ </div>
+</div>
+
+<script>
+const TOTAL_QS = 7;
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1-M1YBoMw1LeTG_vT32aS8NzVTLMICLb5sMKGtton-tdApCGzG22V52k4c20HWpe4/exec";
+
+const urlParams = new URLSearchParams(window.location.search);
+const studentNo = urlParams.get('studentNo') || '';
+const row = urlParams.get('row') || '';
+const sheetName = urlParams.get('sheet') || '';
+
+let hearts = 3, score = 0, current = 0, selected = [], questions = [], audioCtx = null;
+const SCORE_PER_Q = [1, 1, 1, 1, 1, 2, 3]; 
+
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+const gcdArr = a => a.reduce(gcd);
+function pf(n) { let r = []; for (let d = 2; n > 1; d++) while (n % d === 0) { r.push(d); n /= d } return r; }
+
+(function createRandomAnimals() {
+    const container = document.getElementById('animal-container');
+    const animals = ['🐟','🐠','🐡','🐙','🦀','🫧'].sort(() => Math.random() - 0.5);
+    animals.forEach((animal, i) => {
+        const span = document.createElement('span');
+        span.className = 'animal-bg'; span.innerText = animal;
+        const angle = (i / animals.length) * Math.PI * 2;
+        span.style.left = `${50 + Math.cos(angle) * 38}%`; span.style.top = `${50 + Math.sin(angle) * 38}%`;
+        span.style.fontSize = `${[45, 55, 65, 75, 85][Math.floor(Math.random() * 5)]}px`;
+        span.style.opacity = 0.7; span.style.animationDuration = `${5 + Math.random() * 3}s`;
+        container.appendChild(span);
+    });
+})();
+
+function playSound(type) {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    
+    // ตั้งค่าความถี่เสียง: คลิกเลือกการ์ดใช้ความถี่ 130 เท่ากับเกม factor
+    osc.frequency.value = type === "correct" ? 750 : (type === "wrong" || type === "lose" ? 180 : (type === "win" ? 950 : 130));
+    osc.start(); gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
+    osc.stop(audioCtx.currentTime + 0.4);
+}
+
+function buildQuestions() {
+  questions = [];
+  const q2_2 = [[12, 18], [15, 20], [24, 36], [14, 21], [30, 45], [16, 24], [20, 30], [27, 36], [32, 48], [40, 60]];
+  const q2_3 = [[12, 18, 24], [16, 24, 32], [20, 30, 40], [15, 30, 45], [24, 36, 48], [30, 60, 90], [18, 27, 36]];
+  const q3_2 = [[100, 150], [120, 180], [150, 200], [200, 300], [140, 210], [160, 240], [180, 270], [220, 330]];
+  const q3_3 = [[100, 150, 200], [120, 160, 200], [120, 180, 240], [150, 300, 450], [200, 300, 400], [150, 225, 300]];
+
+  q2_2.sort(() => Math.random() - 0.5);
+  q2_3.sort(() => Math.random() - 0.5);
+  q3_2.sort(() => Math.random() - 0.5);
+  q3_3.sort(() => Math.random() - 0.5);
+
+  questions.push(q2_2[0], q2_2[1], q2_3[0], q2_3[1], q2_3[2], q3_2[0], q3_3[0]); 
+}
+
+function startGame() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("gameScreen").style.display = "flex";
+    hearts = 3; score = 0; current = 0;
+    buildQuestions();
+    loadQ();
+}
+
+function loadQ() {
+ selected = []; 
+ document.getElementById("picked").textContent = "-"; 
+ document.getElementById("msg").textContent = "";
+ 
+ const nums = questions[current], g = gcdArr(nums);
+ document.getElementById("progress").textContent = `ข้อ ${current + 1}/${TOTAL_QS}`; 
+ document.getElementById("nums").textContent = nums.join(", ");
+ document.getElementById("score").textContent = `คะแนน ${score}`;
+ document.getElementById("hearts").textContent = "❤️".repeat(hearts) + "🖤".repeat(3 - hearts);
+
+ let weight = SCORE_PER_Q[current];
+ document.getElementById("panelLabel").textContent = `🎯 จงหา ห.ร.ม. (ข้อนี้มีค่า ${weight} คะแนน)`;
+
+ let cards = [{ v: g, t: "gcd" }];
+ 
+ pf(g).forEach(x => {
+   cards.push({ v: x, t: "factor" });
+ });
+ 
+ while (cards.length < 16) {
+   let d;
+   if (current < 5) {
+     d = Math.floor(Math.random() * 49) + 2; 
+   } else {
+     d = Math.floor(Math.random() * 200) + 10; 
+   }
+   if (!cards.some(c => c.v === d)) {
+     cards.push({ v: d, t: "decoy" });
+   }
+ }
+ cards.sort(() => Math.random() - 0.5);
+ 
+ const cardsGrid = document.getElementById("cards");
+ cardsGrid.innerHTML = "";
+ cards.forEach((c, index) => {
+   const d = document.createElement("button");
+   d.className = "cell"; d.textContent = c.v;
+   d.onclick = () => {
+      if (hearts <= 0) return;
+      
+      // เพิ่มเสียงเอฟเฟกต์ "click" ความถี่ 130 เมื่อทำการคลิกเลือก/ยกเลิกการ์ดคำตอบ
+      playSound("click");
+      
+      d.classList.toggle("active");
+      if (d.classList.contains("active")) {
+        selected.push({ id: index, v: c.v, t: c.t }); 
+      } else {
+        selected = selected.filter(x => x.id !== index);
+      }
+      document.getElementById("picked").textContent = selected.length ? selected.map(x => x.v).join(" × ") : "-";
+   };
+   cardsGrid.appendChild(d);
+ });
+}
+
+function showSolution() {
+ const nums = questions[current], g = gcdArr(nums);
+ document.getElementById("solution").innerHTML = nums.map(n => {
+   const factors = pf(n); return `<b>${n}</b> = ${factors.length ? factors.join(" × ") : "1"}`;
+ }).join("<br>") + "<hr style='margin:12px 0; border:none; border-top:2px dashed var(--primary);'><b>ดังนั้น ห.ร.ม. คือ <span style='color:var(--success); font-size:1.3rem;'>" + g + "</span></b>";
+ document.getElementById("modal").classList.add("show");
+}
+
+function closeModal() {
+ document.getElementById("modal").classList.remove("show");
+ next(); 
+}
+
+function next() {
+ current++;
+ if (current >= TOTAL_QS) winGame();
+ else loadQ();
+}
+
+function checkAnswer() {
+ if (!selected.length) {
+   document.getElementById("msg").textContent = "⚠️ เลือกคำตอบก่อนส่งนะจ๊ะ!";
+   return;
+ }
+ const target = gcdArr(questions[current]);
+ let isCorrect = false;
+
+ if (selected.length === 1 && selected[0].t === "gcd") {
+   isCorrect = true;
+ } else {
+   const p = selected.reduce((a, b) => a * b.v, 1);
+   if (p === target) isCorrect = true;
+ }
+
+ // นำเสียงกดปุ่มทั่วไปตอนคลิกตรวจสอบออกแล้ว จะเหลือเพียงเสียงแสดงผลลัพธ์ ถูก หรือ ผิด เท่านั้น
+ if (isCorrect) {
+   playSound("correct"); // เล่นเสียงตอบถูกเมื่อตรวจคำตอบผ่าน
+   score = Math.min(10, score + SCORE_PER_Q[current]); 
+   document.getElementById("score").textContent = `คะแนน ${score}`;
+   next();
+ } else {
+   hearts--;
+   playSound("wrong"); // เล่นเสียงตอบผิดเมื่อส่งคำตอบไม่ถูกต้อง
+   document.getElementById("hearts").textContent = "❤️".repeat(hearts) + "🖤".repeat(3 - hearts);
+   document.getElementById("msg").textContent = "⚠️ คำตอบยังไม่ถูกจ้า!";
+   const panel = document.getElementById("mainPanel");
+   panel.classList.remove('shake'); void panel.offsetWidth; panel.classList.add('shake');
+   
+   setTimeout(() => {
+     if (hearts <= 0) gameOver();
+     else showSolution();
+   }, 400);
+ }
+}
+
+function winGame() {
+  playSound("win");
+  document.getElementById("gameScreen").style.display = "none";
+  const end = document.getElementById("endScreen"); end.style.display = "block";
+  end.innerHTML = `
+    <div class="big">🏆</div><h1>ยินดีด้วยจ้า!</h1><h2>ตามล่าหา ห.ร.ม. สำเร็จ ได้คะแนน ${score}/10 คะแนน</h2>
+    <p id="saveStatus" class="subtitle" style="margin-top:10px; color: #1d4ed8; font-weight:bold;">💾 กำลังบันทึกผลงานลงระบบ...</p>
+    <button class="start" id="retryBtn" onclick="location.reload()" disabled>♻️ เล่นอีกครั้ง</button>
+    <button class="back" onclick="goToMain()">📌 หน้าภารกิจ</button>`;
+  saveScoreToGoogleSheet();
+}
+
+function gameOver() {
+  playSound("lose");
+  document.getElementById("gameScreen").style.display = "none";
+  const end = document.getElementById("endScreen"); end.style.display = "block";
+  const isScoreSavable = score >= 5;
+  
+  end.innerHTML = `
+    <h1>GAME OVER</h1><div class="big">💔</div><h2>พยายามอีกนิดนะเด็กๆ!</h2>
+    <p class="subtitle" style="margin-top:10px;">คุณทำได้สำเร็จทั้งหมด ${score}/10 คะแนน</p>
+    ${isScoreSavable ? '<p id="saveStatus" class="subtitle" style="margin-top:10px; color: #1d4ed8; font-weight:bold;">💾 กำลังบันทึกผลงานลงระบบ...</p>' : ''}
+    <button class="start" id="retryBtn" onclick="location.reload()" ${isScoreSavable ? 'disabled' : ''}>♻️ ลองอีกครั้ง</button>
+    <button class="back" onclick="goToMain()">📌 หน้าภารกิจ</button>`;
+  
+  if (isScoreSavable) saveScoreToGoogleSheet();
+}
+
+async function saveScoreToGoogleSheet() {
+  const statusText = document.getElementById("saveStatus"), retryBtn = document.getElementById("retryBtn");
+  if (!studentNo || !row || !sheetName) {
+      statusText.innerHTML = "⚠️ ไม่พบข้อมูลนักเรียน (คะแนนไม่บันทึก)";
+      statusText.style.color = "#ef4444"; retryBtn.disabled = false; return;
+  }
+  try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "saveScore", studentNo, row: parseInt(row), col: 5, sheet: sheetName, score: score })
+      });
+      statusText.innerHTML = "✅ บันทึกผลสำเร็จเรียบร้อย!"; statusText.style.color = "#10b981";
+  } catch (e) {
+      statusText.innerHTML = "❌ เกิดข้อผิดพลาดในการบันทึกคะแนน"; statusText.style.color = "#ef4444";
+  } finally { retryBtn.disabled = false; }
+}
+
+function goToMain() { location.href = "main.html"; }
+</script>
+</body>
+</html>
