@@ -44,6 +44,11 @@
     button:active:not(:disabled) { transform: scale(0.95); }
     button:disabled { background: #cbd5e1; color: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none; }
 
+   /* ปุ่มอันดับฝีมือ สีเขียว */
+   .rankBtn {margin-top: 15px;border: none;border-radius: 50px;padding: 14px 45px;font-size: 22px;cursor: pointer;background: linear-gradient(135deg, #22c55e, #15803d);color: white;box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);transition: all 0.3s ease;}
+   .rankBtn:hover {transform: scale(1.06);box-shadow: 0 12px 24px rgba(34, 197, 94, 0.4);}
+   .rankBtn:active {transform: scale(0.95);}
+
     #msg { margin-top: 20px; font-size: 18px; color: var(--text-main); min-height: 27px; }
     .loading { color: var(--primary); display: inline-block; animation: pulse 0.8s infinite alternate; }
     @keyframes pulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.05); opacity: 1; } }
@@ -74,7 +79,7 @@
             <input type="tel" class="digit" maxlength="1" inputmode="numeric" aria-label="หลักที่ 4">
         </div>
         <button type="submit" id="submitBtn">🚀 เข้าสู่ระบบ</button>
-        <button type="button" onclick="location.href='board.html'">🏆 อันดับฝีมือ</button>
+        <button type="button" class="rankBtn" onclick="location.href='board.html'">🏆 อันดับฝีมือ</button>
     </form>
     <p id="msg"></p>
     <div class="footer">🌈 ยินดีต้อนรับนักเรียนทุกคน 🌈</div>
