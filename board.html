@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>🏆 ทำเนียบยอดฝีมือ</title>
+<link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --bg-grad: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 40%, #7dd3fc 70%, #38bdf8 100%);
+        --gold: #f59e0b;
+        --silver: #94a3b8;
+        --bronze: #b45309;
+        --card-bg: rgba(255, 255, 255, 0.85);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Itim', sans-serif; }
+    
+    body { 
+        min-height: 100vh; 
+        padding: 20px 15px; 
+        background: var(--bg-grad); 
+        position: relative; 
+        overflow-x: hidden;
+        background-attachment: fixed;
+    }
+
+    /* สัตว์น้ำพื้นหลัง ลอยกระจายตัวแบบธรรมชาติ */
+    .animal-bg { position: absolute; pointer-events: none; z-index: 1; animation: floatAnimal 8s infinite ease-in-out; filter: drop-shadow(0 4px 8px rgba(0,0,0,.1)); }
+    @media (max-width: 768px){ .animal-bg { opacity: 0.12 !important; } }
+    @keyframes floatAnimal { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(4deg); } }
+
+    /* Container หลัก ปรับความกว้างให้ยืดหยุ่นตามหน้าจอ */
+    .container { position: relative; z-index: 10; width: 100%; max-width: 900px; margin: auto; }
+    
+    /* ส่วนหัวกระดานอันดับ */
+    .board-header { 
+        background: var(--card-bg); 
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+        border-radius: 20px; 
+        padding: 20px 25px; 
+        margin-bottom: 15px; 
+        border: 1px solid rgba(255, 255, 255, 0.7); 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.06); 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+    }
+    .title-zone { display: flex; align-items: center; gap: 12px; }
+    .title-zone span { font-size: 1.8rem; }
+    .title-zone h1 { font-size: 1.6rem; color: var(--primary-dark); letter-spacing: 0.5px; }
+    
+    .back-btn { 
+        border: none; background: #ffffff; color: var(--primary-dark); 
+        padding: 8px 18px; border-radius: 50px; font-size: 1rem; cursor: pointer; 
+        border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+    }
+    .back-btn:hover { background: var(--primary); color: white; transform: translateY(-1px); }
+
+    /* บอร์ดรายชื่อสไตล์โมเดิร์น รองรับความสูงยาว */
+    .leaderboard-box { 
+        background: var(--card-bg); 
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+        border-radius: 24px; 
+        padding: 15px; 
+        border: 1px solid rgba(255, 255, 255, 0.7); 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+        overflow: hidden;
+    }
+    
+    /* โครงสร้างตารางหลักปรับอัตราส่วนแบ่งคอลัมน์ให้ดูดีในจอใหญ่ */
+    .list-item { 
+        display: grid; 
+        grid-template-columns: 60px 1fr 100px 140px 100px; 
+        align-items: center; 
+        padding: 12px 15px; 
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8); 
+        border-radius: 12px; 
+        transition: all 0.2s ease; 
+        font-size: 1.15rem; 
+    }
+    .list-item:last-child { border-bottom: none; }
+    
+    /* เอฟเฟกต์ยกตัวเมื่อเอาเมาส์ชี้ (เฉพาะจอคอม) */
+    @media (min-width: 769px) {
+        .list-item:not(.list-header):hover { 
+            background: rgba(255, 255, 255, 0.8); 
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+    }
+    
+    /* [FIXED] แก้ไขเป็นสีพื้นหลังทึบ 100% เพื่อไม่ให้ชื่อนักเรียนเลื่อนทะลุขึ้นมาซ้อนทับขณะเลื่อนจอ */
+    .list-header { 
+        font-weight: bold; 
+        color: #334155; 
+        border-bottom: 2px solid #cbd5e1; 
+        font-size: 1.05rem; 
+        background: #f1f5f9; 
+        position: sticky;
+        top: -15px; /* ชดเชย padding ของ leaderboard-box */
+        margin: -15px -15px 10px -15px; /* ขยายขอบชนกล่องตัวนอก */
+        padding: 15px 30px; /* เพิ่ม padding ด้านข้างให้ตรงกับเนื้อหาด้านล่าง */
+        border-radius: 24px 24px 0 0;
+        z-index: 20;
+    }
+
+    /* ลำดับเลขและวงกลมเหรียญรางวัล จัดให้อยู่ตรงกลางคอลัมน์เสมอกัน */
+    .rank-col { display: flex; align-items: center; justify-content: center; text-align: center; width: 100%; }
+    .rank-num { font-weight: bold; font-size: 1.2rem; text-align: center; color: #64748b; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+    .rank-1 { background: var(--gold); color: white; border-radius: 50%; box-shadow: 0 4px 10px rgba(245,158,11,0.4); }
+    .rank-2 { background: var(--silver); color: white; border-radius: 50%; box-shadow: 0 4px 10px rgba(148,163,184,0.4); }
+    .rank-3 { background: var(--bronze); color: white; border-radius: 50%; box-shadow: 0 4px 10px rgba(180,83,9,0.4); }
+
+    .std-name { color: #0f172a; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; min-width: 0; }
+    .std-room { text-align: center; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .std-task { text-align: center; color: var(--primary-dark); font-weight: bold; }
+    .std-score { text-align: center; color: #059669; font-weight: bold; font-size: 1.3rem; }
+
+    /* ปุ่มเปิด-ปิดรายชื่อคนไม่ทำภารกิจ */
+    .toggle-zero-zone { text-align: center; padding: 20px 0 10px 0; }
+    .toggle-zero-btn { 
+        background: #ffffff; border: 1px solid #cbd5e1; color: #475569; 
+        padding: 10px 24px; border-radius: 50px; font-size: 1rem; cursor: pointer; 
+        transition: all 0.2s ease; font-family: 'Itim', sans-serif; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02); 
+    }
+    .toggle-zero-btn:hover { background: #f8fafc; color: #0f172a; border-color: #94a3b8; transform: translateY(-1px); }
+
+    /* แอนิเมชันตอนกำลังดาวน์โหลดข้อมูล */
+    .skeleton { height: 52px; background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 400% 100%; border-radius: 12px; margin-bottom: 10px; animation: loading 1.5s infinite; }
+    @keyframes loading { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+    .msg-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 1.2rem; }
+
+    /* ======================================================= */
+    /* 📱 RESPONSIVE BREAKPOINT: สำหรับหน้าจอมือถือและแท็บเล็ตขนาดเล็ก */
+    /* ======================================================= */
+    @media (max-width: 600px) {
+        body { padding: 10px 8px; }
+        .board-header { padding: 12px 16px; margin-bottom: 10px; border-radius: 16px; }
+        .board-header h1 { font-size: 1.25rem; }
+        .title-zone span { font-size: 1.4rem; }
+        .back-btn { padding: 6px 12px; font-size: 0.85rem; }
+        
+        .leaderboard-box { padding: 8px; border-radius: 18px; }
+        
+        .list-header {
+            top: -8px;
+            margin: -8px -8px 10px -8px;
+            padding: 12px 14px;
+            border-radius: 18px 18px 0 0;
+        }
+
+        /* สลับสัดส่วน Grid คอลัมน์ให้เหมาะกับการอ่านบนจอมือถือแนวตั้ง */
+        .list-item { 
+            grid-template-columns: 40px 1fr 50px 85px 55px; 
+            padding: 10px 6px; 
+            font-size: 0.95rem; 
+        }
+        .list-header { font-size: 0.85rem; }
+        
+        .rank-num { font-size: 1rem; width: 24px; height: 24px; }
+        .std-name { padding-right: 4px; }
+        .std-score { font-size: 1.1rem; }
+        .toggle-zero-btn { font-size: 0.9rem; padding: 8px 18px; }
+        .skeleton { height: 44px; }
+    }
+</style>
+</head>
+<body>
+
+<div id="animal-container"></div>
+
+<div class="container">
+    <div class="board-header">
+        <div class="title-zone">
+            <span>🏆</span>
+            <h1>ตารางอันดับ</h1>
+        </div>
+        <button class="back-btn" onclick="location.href='index.html'">🐧 เข้าสู่ระบบนักเรียน</button>
+    </div>
+
+    <div class="leaderboard-box">
+        <div class="list-item list-header">
+            <div class="rank-col">อันดับ</div>
+            <div>ชื่อ - นามสกุล</div>
+            <div style="text-align: center;">ชั้น</div>
+            <div style="text-align: center;">ภารกิจสำเร็จ</div>
+            <div style="text-align: center;">คะแนน</div>
+        </div>
+        
+        <div id="leaderboardList">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbx1-M1YBoMw1LeTG_vT32aS8NzVTLMICLb5sMKGtton-tdApCGzG22V52k4c20HWpe4/exec";
+
+// [FIXED] ปรับปรุงวิธีคำนวณตำแหน่ง เพื่อให้ไอคอนกระจายตัวทั่วหน้าจอ ไม่กระจุกอยู่ขอบวงรีขอบนอก
+(function initBackgroundAnimals() {
+    const container = document.getElementById('animal-container');
+    const animals = ['🐟','🐠','🐡','🐙','🦀','🫧'];
+    
+    for (let i = animals.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [animals[i], animals[j]] = [animals[j], animals[i]];
+    }
+
+    animals.forEach((animal) => {
+        const span = document.createElement('span');
+        span.className = 'animal-bg'; span.innerText = animal;
+        span.style.left = `${Math.random() * 90}%`; 
+        span.style.top = `${Math.random() * 90}%`;
+        span.style.fontSize = `${[35, 45, 55][Math.floor(Math.random() * 3)]}px`;
+        span.style.opacity = 0.4; span.style.animationDuration = `${7 + Math.random() * 3}s`;
+        container.appendChild(span);
+    });
+})();
+
+// [FIXED] ดักจับกรณีค่าว่าง เพื่อป้องกันเว็บค้างหน้ากระดาษขาว
+function shortPrefix(name) {
+    if (!name) return "-";
+    return String(name).replace(/^เด็กชาย/, "ด.ช.").replace(/^เด็กหญิง/, "ด.ญ.");
+}
+
+function escapeHTML(str) {
+    if (!str) return "";
+    return String(str).replace(/[&<>"']/g, function(match) {
+        const escapes = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;' };
+        return escapes[match];
+    });
+}
+
+function toggleZeroTasks() {
+    const container = document.getElementById("zeroTasksContainer");
+    const btn = document.getElementById("toggleZeroBtn");
+    if (!container || !btn) return;
+
+    if (container.style.display === "none") {
+        container.style.display = "block";
+        btn.innerHTML = `🔼 ซ่อนรายชื่อที่ยังไม่ทำภารกิจ`;
+    } else {
+        const count = btn.getAttribute("data-count");
+        container.style.display = "none";
+        btn.innerHTML = `🔽 แสดงรายชื่อที่ยังไม่ทำภารกิจ (${count} คน)`;
+    }
+}
+
+function renderLeaderboard(list) {
+    const container = document.getElementById("leaderboardList");
+    if (!list || !list.length) {
+        container.innerHTML = `<div class="msg-text">📭 ยังไม่มีข้อมูลสถิติคะแนนสะสมในระบบ</div>`;
+        return;
+    }
+
+    const activeItems = [];
+    const zeroItems = [];
+
+    list.forEach((student, index) => {
+        const rank = index + 1;
+        let rankClass = "";
+        
+        if(rank === 1) rankClass = "rank-1";
+        else if(rank === 2) rankClass = "rank-2";
+        else if(rank === 3) rankClass = "rank-3";
+
+        const originalName = student.name ? String(student.name) : "-";
+        const formattedName = escapeHTML(shortPrefix(originalName));
+        const safeRoom = escapeHTML(student.room) || "-";
+        
+        const percent = typeof student.percent !== 'undefined' ? student.percent : 0;
+        const completed = typeof student.completed !== 'undefined' ? Number(student.completed) : 0;
+        const total = typeof student.total !== 'undefined' ? student.total : 0;
+        const score = typeof student.score !== 'undefined' ? student.score : 0;
+
+        const itemHTML = `
+            <div class="list-item">
+                <div class="rank-col"><div class="rank-num ${rankClass}">${rank}</div></div>
+                <div class="std-name" title="${escapeHTML(originalName)}">${formattedName}</div>
+                <div class="std-room" title="${safeRoom}">${safeRoom}</div>
+                <div class="std-task">${percent}% (${completed}/${total})</div>
+                <div class="std-score">${score}</div>
+            </div>
+        `;
+
+        if (completed === 0) {
+            zeroItems.push(itemHTML);
+        } else {
+            activeItems.push(itemHTML);
+        }
+    });
+
+    let finalHTML = "";
+
+    if (activeItems.length > 0) {
+        finalHTML += activeItems.join("");
+    } else {
+        finalHTML += `<div class="msg-text">💡 ยังไม่มีนักเรียนคนไหนทำภารกิจสำเร็จเลย</div>`;
+    }
+
+    if (zeroItems.length > 0) {
+        finalHTML += `
+            <div class="toggle-zero-zone">
+                <button type="button" id="toggleZeroBtn" class="toggle-zero-btn" data-count="${zeroItems.length}" onclick="toggleZeroTasks()">
+                    🔽 แสดงรายชื่อที่ยังไม่ทำภารกิจ (${zeroItems.length} คน)
+                </button>
+            </div>
+            <div id="zeroTasksContainer" style="display: none;">
+                ${zeroItems.join("")}
+            </div>
+        `;
+    }
+
+    container.innerHTML = finalHTML;
+}
+
+async function loadLeaderboard() {
+    const cached = localStorage.getItem("cachedLeaderboard");
+    if (cached) {
+        try { renderLeaderboard(JSON.parse(cached)); } catch(e) {}
+    }
+
+    try {
+        const res = await fetch(`${API_URL}?action=leaderboard`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        
+        if (data && data.leaderboard) {
+            localStorage.setItem("cachedLeaderboard", JSON.stringify(data.leaderboard));
+            renderLeaderboard(data.leaderboard);
+        }
+    } catch(e) {
+        console.error("Error connecting server:", e);
+        if (!localStorage.getItem("cachedLeaderboard")) {
+            document.getElementById("leaderboardList").innerHTML = `<div class="msg-text">❌ ไม่สามารถดาวน์โหลดตารางอันดับได้ในขณะนี้</div>`;
+        }
+    }
+}
+
+loadLeaderboard();
+</script>
+</body>
+</html>
