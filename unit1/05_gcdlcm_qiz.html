@@ -35,7 +35,7 @@ body {
 @keyframes floatEffect { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(5deg); } }
 
 .container { 
-  position: relative; z-index: 10; width: 100%; max-width: 700px; margin: 0 auto;
+  position: relative; z-index: 10; width: 100%; max-width: 700px; margin: auto;
   padding: clamp(16px, 4vw, 32px); background: var(--panel); backdrop-filter: blur(20px); 
   border-radius: 24px; border: 3px dashed var(--primary); box-shadow: var(--shadow-lg); 
   display: flex; flex-direction: column; gap: 14px;
@@ -91,7 +91,6 @@ button.btn-submit { background: linear-gradient(135deg, #10b981, #059669); box-s
 
 @media (max-width: 768px){ 
   .decor-item { opacity: 0.12 !important; } 
-  body { align-items: flex-start; }
 }
 </style>
 </head>
@@ -137,7 +136,7 @@ button.btn-submit { background: linear-gradient(135deg, #10b981, #059669); box-s
 </div>
 
 <script>
-const TOTAL_QS = 5, SCORE_PER_Q = 3; // ปรับกลับเป็นข้อละ 3 คะแนน รวมเป็นเต็ม 15 คะแนนอย่างสมบูรณ์
+const TOTAL_QS = 5, SCORE_PER_Q = 3;
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1-M1YBoMw1LeTG_vT32aS8NzVTLMICLb5sMKGtton-tdApCGzG22V52k4c20HWpe4/exec";
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -178,10 +177,11 @@ document.getElementById("ansInput").addEventListener("keyup", e => { if (e.key =
 
 function generateDynamicQuestions() {
     questions = [];
+    const rIdx = arr => Math.floor(Math.random() * arr.length);
     
     // ข้อ 1: เชือกของพ่อ
-    const hrmBase = [4, 5, 6][Math.floor(Math.random() * 3)];
-    const mults1 = [[7, 9, 11], [8, 11, 13], [9, 11, 14], [6, 11, 13]][Math.floor(Math.random() * 4)];
+    const hrmBase = [4, 5, 6][rIdx([4, 5, 6])];
+    const mults1 = [[7, 9, 11], [8, 11, 13], [9, 11, 14], [6, 11, 13]][rIdx([[7, 9, 11], [8, 11, 13], [9, 11, 14], [6, 11, 13]])];
     const q1_A = hrmBase * mults1[0], q1_B = hrmBase * mults1[1], q1_C = hrmBase * mults1[2];
     const q1_hrm = gcdArr([q1_A, q1_B, q1_C]), q1_ans = (q1_A + q1_B + q1_C) / q1_hrm;
     questions.push({
@@ -191,8 +191,8 @@ function generateDynamicQuestions() {
     });
 
     // ข้อ 2: คุกกี้ของสินี
-    const q2_hrmBase = [5, 10, 15][Math.floor(Math.random() * 3)];
-    const mults2 = [[3, 4, 5], [4, 5, 6], [3, 5, 7]][Math.floor(Math.random() * 3)];
+    const q2_hrmBase = [5, 10, 15][rIdx([5, 10, 15])];
+    const mults2 = [[3, 4, 5], [4, 5, 6], [3, 5, 7]][rIdx([[3, 4, 5], [4, 5, 6], [3, 5, 7]])];
     const q2_A = q2_hrmBase * mults2[0], q2_B = q2_hrmBase * mults2[1], q2_C = q2_hrmBase * mults2[2];
     const q2_hrm = gcdArr([q2_A, q2_B, q2_C]), j_nom = q2_A / q2_hrm, j_noey = q2_B / q2_hrm, j_choc = q2_C / q2_hrm, q2_ans = (j_noey + j_choc) - j_nom;
     questions.push({
@@ -202,7 +202,7 @@ function generateDynamicQuestions() {
     });
 
     // ข้อ 3: เวลาปล่อยเรือ
-    const q3_sets = [[10, 15, 30], [10, 20, 30], [12, 15, 20], [15, 20, 30]][Math.floor(Math.random() * 4)];
+    const q3_sets = [[10, 15, 30], [10, 20, 30], [12, 15, 20], [15, 20, 30]][rIdx([[10, 15, 30], [10, 20, 30], [12, 15, 20], [15, 20, 30]])];
     const q3_lcm = lcmArr(q3_sets), totalMinutes = q3_lcm * 3; 
     questions.push({
         text: `ท่าเรือปล่อยเรือออกจากท่า ดังนี้ เรือธงเขียวออกทุก <b>${q3_sets[0]}</b> นาที เรือธงเหลืองออกทุก <b>${q3_sets[1]}</b> นาที เรือธงส้มออกทุก <b>${q3_sets[2]}</b> นาที ถ้าเรือทั้ง 3 ประเภท ออกจากท่าพร้อมกันครั้งแรกเวลา 06.00 น. **นับจากครั้งแรก ต้องใช้เวลาผ่านไปอีกกี่นาที** เรือทั้ง 3 ประเภทจึงจะออกจากท่าพร้อมกันเป็นครั้งที่ 4 (ถัดจากครั้งแรกอีก 3 ครั้ง)`,
@@ -211,7 +211,7 @@ function generateDynamicQuestions() {
     });
 
     // ข้อ 4: ซื้ออาหารทะเล
-    const q4_sets = [[20, 30, 40], [15, 20, 30], [10, 15, 25], [12, 18, 24]][Math.floor(Math.random() * 4)];
+    const q4_sets = [[20, 30, 40], [15, 20, 30], [10, 15, 25], [12, 18, 24]][rIdx([[20, 30, 40], [15, 20, 30], [10, 15, 25], [12, 18, 24]])];
     const q4_lcm = lcmArr(q4_sets), kg_A = q4_lcm / q4_sets[0], kg_B = q4_lcm / q4_sets[1], kg_C = q4_lcm / q4_sets[2], q4_ans = kg_A + kg_B + kg_C;
     questions.push({
         text: `ปลา กุ้ง และหมึกราคากิโลกรัมละ <b>${q4_sets[0]}</b> บาท, <b>${q4_sets[1]}</b> บาท และ <b>${q4_sets[2]}</b> บาท ตามลำดับ ถ้าต้องการซื้ออาหารทะเลทุกชนิด โดยจ่ายเงินซื้อแต่ละชนิดเท่าๆ กันและจ่ายเงินน้อยที่สุด จะได้อาหารทะเลรวมกันทั้งหมดกี่กิโลกรัม`,
@@ -220,7 +220,7 @@ function generateDynamicQuestions() {
     });
 
     // ข้อ 5: จัดหนังสือใส่กล่อง
-    const q5_sets = [[6, 8, 12], [8, 10, 12], [4, 6, 10], [6, 9, 15]][Math.floor(Math.random() * 4)];
+    const q5_sets = [[6, 8, 12], [8, 10, 12], [4, 6, 10], [6, 9, 15]][rIdx([[6, 8, 12], [8, 10, 12], [4, 6, 10], [6, 9, 15]])];
     const q5_lcm = lcmArr(q5_sets), limit = q5_lcm + 40;
     const box_A = q5_lcm / q5_sets[0], box_B = q5_lcm / q5_sets[1], box_C = q5_lcm / q5_sets[2], q5_ans = box_A + box_B + box_C;
     questions.push({
@@ -233,7 +233,7 @@ function generateDynamicQuestions() {
 function startGame() {
     document.getElementById("startScreen").style.display = "none";
     document.getElementById("gameScreen").style.display = "flex";
-    score = 0; current = 0;
+    score = current = 0;
     generateDynamicQuestions();
     loadQuestion();
 }
@@ -264,8 +264,7 @@ function checkAnswer() {
         playSound("correct");
         score += SCORE_PER_Q;
         document.getElementById("score").textContent = `คะแนน: ${score}`;
-        msgEl.style.color = "var(--success)";
-        msgEl.textContent = "🎉 ถูกต้องแล้วจ้า เก่งมาก!";
+        msgEl.style.color = "var(--success)"; msgEl.textContent = "🎉 ถูกต้องแล้วจ้า เก่งมาก!";
         setTimeout(nextQuestion, 1200);
     } else {
         playSound("wrong");
@@ -298,34 +297,25 @@ function endGame() {
     end.style.display = "block";
     
     const isSavable = score > 0;
-    let htmlContent = `
-        <div class="big">🏆</div>
-        <h1>ทำภารกิจครบถ้วน!</h1>
-        <h2>คุณได้คะแนนรวม ทั้งหมด ${score}/${TOTAL_QS * SCORE_PER_Q} คะแนน</h2>
-    `;
+    let htmlContent = `<div class="big">🏆</div><h1>ทำภารกิจครบถ้วน!</h1><h2>คุณได้คะแนนรวม ทั้งหมด ${score}/${TOTAL_QS * SCORE_PER_Q} คะแนน</h2>`;
     
     htmlContent += isSavable 
         ? `<p id="saveStatus" class="subtitle" style="margin-top:10px; color: #1d4ed8; font-weight:bold;">💾 กำลังบันทึกผลงานลงระบบ Google Sheet...</p>`
         : `<p class="subtitle" style="margin-top:10px; color: var(--danger); font-weight:bold;">⚠️ คะแนนเป็น 0 จะไม่ถูกบันทึกลงระบบนะจ๊ะ ลองพยายามใหม่อีกครั้ง!</p>`;
     
-    htmlContent += `
-        <button class="btn btn-start" id="retryBtn" onclick="location.reload()" ${isSavable ? 'disabled' : ''}>♻️ ทำใหม่อีกครั้ง</button>
-        <button class="btn btn-back" onclick="goToMain()">📌 หน้าภารกิจ</button>
-    `;
+    htmlContent += `<button class="btn btn-start" id="retryBtn" onclick="location.reload()" ${isSavable ? 'disabled' : ''}>♻️ ทำใหม่อีกครั้ง</button>
+                    <button class="btn btn-back" onclick="goToMain()">📌 หน้าภารกิจ</button>`;
     
     end.innerHTML = htmlContent;
     if (isSavable) saveScoreToGoogleSheet();
 }
 
 async function saveScoreToGoogleSheet() {
-    const statusText = document.getElementById("saveStatus");
-    const retryBtn = document.getElementById("retryBtn");
-    
+    const statusText = document.getElementById("saveStatus"), retryBtn = document.getElementById("retryBtn");
     if (!studentNo || !row || !sheetName) {
         statusText.innerHTML = "⚠️ ไม่พบข้อมูลนักเรียน (ไม่สามารถบันทึกคะแนน)";
         statusText.style.color = "#ef4444"; retryBtn.disabled = false; return;
     }
-    
     try {
         await fetch(GOOGLE_SCRIPT_URL, {
             method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
