@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>เรียงเศษส่วน</title>
 <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
 <style>
@@ -15,7 +15,7 @@
   --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Itim', sans-serif; -webkit-tap-highlight-color: transparent; }
-body { display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%; background: var(--bg-grad); padding: 16px; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+body { display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%; background: var(--bg-grad); padding: 16px; user-select: none; -webkit-user-select: none; touch-action: none; }
 #animal-container { position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
 .animal-bg { position: absolute; animation: floatAnimal 6s infinite ease-in-out; filter: drop-shadow(0 6px 12px rgba(0,0,0,.12)); }
 @keyframes floatAnimal { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(5deg); } }
@@ -30,7 +30,7 @@ h2 { color: var(--primary-dark); font-size: clamp(1.2rem, 3.5vw, 1.5rem); text-a
 .panel { padding: clamp(10px, 2.5vw, 16px) 12px; border-radius: 20px; margin-bottom: 14px; text-align: center; border: 2px dashed var(--primary); background: rgba(255,255,255,0.5); box-shadow: var(--shadow-sm); }
 .panel-label { font-size: clamp(0.9rem, 2.5vw, 1.05rem); color: #4b5563; font-weight: bold; margin-bottom: 4px; }
 .target { font-size: clamp(22px, 5.5vw, 30px); font-weight: 800; color: #d35400; line-height: 1.2; margin: 4px 0; background-color: #ffeaa7; padding: 8px 12px; border-radius: 12px; }
-.card-container { display: flex; gap: 12px; margin-bottom: 14px; min-height: 140px; justify-content: center; align-items: center; padding: 15px 10px; background: #eef2f3; border-radius: 20px; width: 100%; position: relative; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+.card-container { display: flex; gap: 12px; margin-bottom: 14px; min-height: 140px; justify-content: center; align-items: center; padding: 15px 10px; background: #eef2f3; border-radius: 20px; width: 100%; position: relative; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); touch-action: none; }
 .card { flex: 1; max-width: 100px; height: 120px; background: #fff; border: 3px solid #3498db; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: clamp(18px, 4vw, 24px); font-weight: bold; color: #2c3e50; box-shadow: var(--shadow-sm); cursor: grab; touch-action: none; transition: opacity 0.15s ease; }
 .card:active { cursor: grabbing; }
 .card.dragging-placeholder { opacity: 0 !important; }
@@ -213,9 +213,12 @@ function initGame() {
 const container = document.getElementById('cardBox');
 
 function onDragStart(e) {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
     e.preventDefault();
     const card = e.target.closest('.card');
     if (!card || hearts <= 0) return;
+
+    if (ghostElement) { ghostElement.remove(); }
 
     activeDraggingCard = card;
     playSound("click");
